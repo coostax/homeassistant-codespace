@@ -1,0 +1,6 @@
+[submodule "addOnFireflyIII"]
+	path = addon-firefly-iii
+	url = https://github.com/coostax/addon-firefly-iii.git
+[submodule "addOnWallabag"]
+	path = addon-wallabag
+	url = https://github.com/coostax/addon-wallabag.git

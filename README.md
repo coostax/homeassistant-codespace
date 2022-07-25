@@ -1,4 +1,8 @@
-# Local add-on testing
+# Homeassistant AddOns Codespace
+
+Environment for developing home assistant add-ons using devcontainer
+
+## Local add-on testing
 
 The fastest and recommended way to develop add-ons is using a local Visual Studio Code dev environment. The Official Add-ons repository includes a dev container setup for VS Code which will run Supervisor and Home Assistant, with all of the add-ons mapped as Local Add-ons inside, making it simple for add-on developers on Windows, Mac and Linux desktop OS-es.
 
@@ -9,7 +13,7 @@ The fastest and recommended way to develop add-ons is using a local Visual Studi
 * You'll then be able to access the normal onboarding process via the Home Assistant instance at http://localhost:7123/.
 * The add-on(s) found in your root folder will automatically be found in the Local Add-ons repository.
 
-# Usefull links
+## Usefull links
 
 - https://github.com/home-assistant/addons-example - example add-on
 - https://github.com/home-assistant/docker-base - home assistant base images
