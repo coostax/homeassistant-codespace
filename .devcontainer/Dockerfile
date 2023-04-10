@@ -1,46 +1,53 @@
-FROM mcr.microsoft.com/vscode/devcontainers/base:debian
-
-WORKDIR /workspaces
+FROM mcr.microsoft.com/vscode/devcontainers/python:0-3.10
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# Set Docker daemon config
-RUN \
-    mkdir -p /etc/docker \
-    && echo '{"storage-driver": "vfs"}' > /etc/docker/daemon.json
+# Uninstall pre-installed formatting and linting tools
+# They would conflict with our pinned versions
+RUN pipx uninstall black
+RUN pipx uninstall pydocstyle
+RUN pipx uninstall pycodestyle
+RUN pipx uninstall mypy
+RUN pipx uninstall pylint
 
-# Installa aditional tools
 RUN \
-    apt-get update \
-    && apt-get install -y --no-install-recommends \
-        dbus \
-        network-manager \
-        libpulse0 \
-        xz-utils
-
-# Install docker
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        apt-transport-https \
-        ca-certificates \
-        curl \
-        software-properties-common \
-        gpg-agent \
-    && curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - \
-    && add-apt-repository "deb https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
-    && apt-get update && apt-get install -y --no-install-recommends \
-        docker-ce \
-        docker-ce-cli \
-        containerd.io \
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        # Additional library needed by some tests and accordingly by VScode Tests Discovery
+        bluez \
+        libudev-dev \
+        libavformat-dev \
+        libavcodec-dev \
+        libavdevice-dev \
+        libavutil-dev \
+        libswscale-dev \
+        libswresample-dev \
+        libavfilter-dev \
+        libpcap-dev \
+        libturbojpeg0 \
+        libyaml-dev \
+        libxml2 \
+        git \
+        cmake \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install shellcheck
-RUN \
-    curl -fLs \
-        "https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz" \
-        | tar -xJ \
-    \
-    && mv -f "./shellcheck-stable/shellcheck" "/usr/bin/shellcheck" \
-    && rm -rf "./shellcheck-stable"
+WORKDIR /usr/src
 
-# Generate a machine-id for this container
-RUN rm /etc/machine-id && dbus-uuidgen --ensure=/etc/machine-id
+# Setup hass-release
+RUN git clone --depth 1 https://github.com/home-assistant/hass-release \
+    && pip3 install -e hass-release/
+
+WORKDIR /workspaces
+
+# Install Python dependencies from requirements
+COPY requirements.txt ./
+COPY package_constraints.txt homeassistant/package_constraints.txt
+RUN pip3 install -r requirements.txt --use-deprecated=legacy-resolver
+COPY requirements_test.txt requirements_test_pre_commit.txt ./
+RUN pip3 install -r requirements_test.txt --use-deprecated=legacy-resolver
+RUN rm -rf requirements.txt requirements_test.txt requirements_test_pre_commit.txt homeassistant/
+
+# Set the default shell to bash instead of sh
+ENV SHELL /bin/bash

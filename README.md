@@ -1,6 +1,6 @@
 # Homeassistant AddOns Codespace
 
-Environment for developing home assistant add-ons using devcontainer
+Environment for developing home assistant add-ons using devcontainer, produced from (Home Assistant core repository)[https://github.com/home-assistant/core]
 
 ## Local add-on testing
 
