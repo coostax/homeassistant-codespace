@@ -1,6 +1,6 @@
 # Homeassistant AddOns Codespace
 
-Environment for developing home assistant add-ons using devcontainer
+Environment for developing home assistant add-ons using devcontainer, produced from (Home Assistant core repository)[https://github.com/home-assistant/core]
 
 ## Local add-on testing
 
@@ -35,6 +35,15 @@ docker run \
   -p PORT_STUFF_IF_NEEDED \
   local/my-test-addon
 ´´´
+
+### Submodules
+
+Add-ons exist as submodules, to switch a submodule to a development branch use the following commands:
+```
+git submodule update --init --recursive --remote
+cd submodule_name
+git checkout new_branch_name
+```
 
 ## Usefull links
 
