@@ -13,6 +13,15 @@ The fastest and recommended way to develop add-ons is using a local Visual Studi
 * You'll then be able to access the normal onboarding process via the Home Assistant instance at http://localhost:7123/.
 * The add-on(s) found in your root folder will automatically be found in the Local Add-ons repository.
 
+### Submodules
+
+Add-ons exist as submodules, to switch a submodule to a development branch use the following commands:
+```
+git submodule update --init --recursive --remote
+cd submodule_name
+git checkout new_branch_name
+```
+
 ## Usefull links
 
 - https://github.com/home-assistant/addons-example - example add-on
