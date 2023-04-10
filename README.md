@@ -13,6 +13,29 @@ The fastest and recommended way to develop add-ons is using a local Visual Studi
 * You'll then be able to access the normal onboarding process via the Home Assistant instance at http://localhost:7123/.
 * The add-on(s) found in your root folder will automatically be found in the Local Add-ons repository.
 
+## Local build with Standalone Docker
+
+On the add-on folder where dockerfile is run the following:
+
+´´´
+docker build \
+  --build-arg BUILD_FROM="ghcr.io/hassio-addons/debian-base/amd64:stable" \
+  -t local/my-test-addon \
+  .
+´´´
+
+## Local run
+
+Does not seem to work with firefly..
+
+´´´
+docker run \
+  --rm \
+  -v /tmp/my_test_data:/data \
+  -p PORT_STUFF_IF_NEEDED \
+  local/my-test-addon
+´´´
+
 ## Usefull links
 
 - https://github.com/home-assistant/addons-example - example add-on
