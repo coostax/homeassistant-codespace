@@ -1,38 +1,41 @@
-#Make sure to replace ${GITPOD_REPO_ROOT} with the actual root directory of your 
 image:
   file: .gitpod.Dockerfile
 
-ports:
-  - port: 7123
-    onOpen: ignore
-  - port: 7357
-    onOpen: ignore
-
 tasks:
-  - init: bash devcontainer_bootstrap
-    command: sleep infinity
-    name: Example devcontainer for add-on repositories
+  - name: Home Assistant
+    before: |
+      echo "Preparing for persistence, please wait:"
+      sudo mv -nT /usr/local /workspace/local
+      sudo rm -rf /usr/local
+      sudo ln -fs /workspace/local /usr/local
+      ln -fs /workspace ~/.cache
+    init: |
+      echo "Setting up Home Assistant, please wait:"
+      sudo chown -R gitpod:gitpod /workspace
+      PIP_USER="no" script/setup
+      PIP_USER="no" pre-commit
+      echo "http: {use_x_forwarded_for: true, trusted_proxies: [10.0.0.0/8]}" >> config/configuration.yaml
+      echo "Warming up Home Assistant, please ignore error messages:"
+      timeout 30s hass -c config || true
+    command: |
+      hass -c config
+    env: { "DEVCONTAINER": "1" }
+
+ports:
+  - port: 8123
+    onOpen: open-browser
+
+github:
+  prebuilds:
+    master: true
+    branches: true
+    pullRequests: false
+    pullRequestsFromForks: false
+    addCheck: true
+    addComment: false
+    addBadge: false
 
 vscode:
   extensions:
-    - timonwong.shellcheck
-    - esbenp.prettier-vscode
-
-plugins:
-  vscode:
-    terminal.integrated.profiles.linux:
-      zsh:
-        path: /usr/bin/zsh
-    terminal.integrated.defaultProfile.linux: zsh
-    editor.formatOnPaste: false
-    editor.formatOnSave: true
-    editor.formatOnType: true
-    files.trimTrailingWhitespace: true
-
-workspace:
-  - name: Home Assistant Add-ons
-    location: "${GITPOD_REPO_ROOT}"
-    mount:
-      type: volume
-      source: "${GITPOD_REPO_ROOT}"
-      target: /var/lib/docker
+    - "redhat.vscode-yaml"
+    - "esbenp.prettier-vscode"
